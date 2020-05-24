@@ -1,0 +1,10 @@
+---
+
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: reload httpd
+  service: name=httpd state=reloaded
+
+- name: restart iqserver
+  service: name=iqserver state=restarted

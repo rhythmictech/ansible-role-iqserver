@@ -1,0 +1,163 @@
+---
+# compat for amazon linux
+- set_fact: ansible_distribution_major_version=6
+  when: ansible_distribution == "Amazon" and ansible_distribution_major_version == "NA"
+  tags: ['iqserver']
+
+- set_fact: ansible_distribution_major_version=7
+  when: ansible_distribution == "Amazon" and ansible_distribution_major_version == "2"
+  tags: ['iqserver']
+
+- name: ensure iqserver user exists
+  user:
+    name: "{{ iqserver_user }}"
+    state: present
+    system: true
+  tags: ['iqserver']
+
+- name: ensure iqserver parent directory exists
+  file:
+    path: "{{ iqserver_base_dir }}"
+    state: directory
+    owner: "{{ iqserver_user }}"
+    group: "{{ iqserver_user }}"
+    mode: 0750
+  tags: ['iqserver']
+
+- name: check if iqserver is already installed
+  stat: path="{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
+  register: iqserver_found
+  tags: ['iqserver']
+
+# Todo figure out how to version pin
+- name: download iqserver binary
+  get_url:
+    url: "{{ iqserver_download_base_url }}/latest.tar.gz"
+    dest: "/usr/src/iqserver.tar.gz"
+  when: not iqserver_found.stat.exists
+  tags: ['iqserver']
+
+- name: untar iqserver
+  become_user: "{{ iqserver_user }}"
+  unarchive:
+    src: "/usr/src/iqserver.tar.gz"
+    dest: "{{ iqserver_base_dir }}"
+    copy: no
+  when: not iqserver_found.stat.exists
+  tags: ['iqserver']
+
+- name: ensure mode is correct for iqserver dir
+  file:
+    path: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
+    mode: 0750
+  tags: ['iqserver']
+
+
+- name: create iqserver symlink
+  file:
+    src: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
+    dest: "{{ iqserver_base_dir }}/current"
+    state: link
+    owner: "{{ iqserver_user }}"
+    group: "{{ iqserver_user }}"
+  tags: ['iqserver']
+
+- name: ensure that the repodata dir exists
+  file:
+    dest: "{{ iqserver_base_dir }}/sonatype-work"
+    owner: "{{ iqserver_user }}"
+    group: "{{ iqserver_user }}"
+    mode: 0750
+    state: directory
+  tags: ['iqserver']
+
+- name: create symlink for iqserver data
+  file:
+    src: /opt/iqserver/sonatype-work
+    dest: /opt/iqserver/current/sonatype-work
+    state: link
+  tags: ['iqserver']
+
+#- name: adjust iqserver.properties to restrict to 127.0.0.1
+#  lineinfile: dest=/opt/iqserver/current/etc/iqserver-default.properties regexp="^application-host=" line="application-host=127.0.0.1"
+
+- name: set RUN_AS_USER in iqserver script
+  lineinfile:
+    dest: "{{ iqserver_base_dir }}/current/bin/iqserver.rc"
+    regexp: '^#'
+    line: 'run_as_user="{{ iqserver_user }}"'
+    state: present
+    backrefs: yes
+  tags: ['iqserver']
+
+
+- name: set jvm heap in vmoptions
+  lineinfile:
+    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver.vmoptions"
+    regexp: "^{{ item }}"
+    line: "{{ item }}{{ iqserver_heap_size }}"
+  with_items:
+    - '-Xms'
+    - '-Xmx'
+  tags: ['iqserver']
+
+- name: set maxdirect memory in vmoptions
+  lineinfile:
+    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver.vmoptions"
+    regexp: "^-XX:MaxDirectMemorySize="
+    line: "-XX:MaxDirectMemorySize={{ iqserver_maxdirectmem }}"
+  tags: ['iqserver']
+
+- name: include iqserver startup config in iqserver script
+  lineinfile:
+    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver"
+    line: ". {{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver.rc"
+    insertbefore: "^INSTALL4J_JAVA_PREFIX="
+  tags: ['iqserver']
+
+- name: set iqserver_HOME in iqserver script
+  lineinfile:
+    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver"
+    regexp: "^iqserver_HOME="
+    line: "iqserver_HOME={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
+  tags: ['iqserver']
+
+- name: link iqserver script to sysinit
+  file:
+    src: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver"
+    dest: /etc/init.d/iqserver
+    state: link
+    owner: root
+    group: root
+    mode: 0755
+  when: ansible_distribution_major_version == '6'
+  tags: ['iqserver']
+
+- name: place iqserver systemd service unit
+  template:
+    src: etc.systemd.system.iqserver.service.j2
+    dest: /etc/systemd/system/iqserver.service
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution_major_version == '7'
+  notify: 
+    - reload systemd
+    - restart iqserver
+  tags: ['iqserver']
+
+- name: ensure the iqserver service has started
+  service: name=iqserver enabled=yes
+  tags: ['iqserver']
+
+- name: ensure the iqserver apache config files are set up
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ item.filename }}"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - { name: etc.httpd.conf.d.iqserver.conf.j2, filename: /etc/httpd/conf.d/iqserver.conf }
+  notify: reload httpd
+  tags: ['iqserver']

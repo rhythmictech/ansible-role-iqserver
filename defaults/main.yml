@@ -1,0 +1,14 @@
+---
+
+iqserver_user: iqserver
+iqserver_version: 3.21.2-03
+
+iqserver_download_base_url: "https://download.sonatype.com/clm/server/"
+
+iqserver_base_dir: '/opt/iqserver'
+
+iqserver_base_url:
+iqserver_context_path: /
+
+iqserver_heap_size: '1200M'
+iqserver_maxdirectmem: '2G'
