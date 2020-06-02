@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+
+  tasks:
+    - include_role:
+        name: java
+    - include_role:
+        name: ansible-role-iqserver

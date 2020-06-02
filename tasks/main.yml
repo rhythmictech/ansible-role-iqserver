@@ -32,26 +32,26 @@
 # Todo figure out how to version pin
 - name: download iqserver binary
   get_url:
-    url: "{{ iqserver_download_base_url }}/latest.tar.gz"
+    url: "{{ iqserver_download_base_url }}nexus-iq-server-{{ iqserver_version}}-bundle.tar.gz"
     dest: "/usr/src/iqserver.tar.gz"
   when: not iqserver_found.stat.exists
+  tags: ['iqserver']
+
+- name: ensure iqserver directory exists with proper perms
+  file:
+    path: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
+    mode: 0750
+    state: directory
   tags: ['iqserver']
 
 - name: untar iqserver
   become_user: "{{ iqserver_user }}"
   unarchive:
     src: "/usr/src/iqserver.tar.gz"
-    dest: "{{ iqserver_base_dir }}"
+    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
     copy: no
   when: not iqserver_found.stat.exists
   tags: ['iqserver']
-
-- name: ensure mode is correct for iqserver dir
-  file:
-    path: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
-    mode: 0750
-  tags: ['iqserver']
-
 
 - name: create iqserver symlink
   file:
@@ -78,61 +78,6 @@
     state: link
   tags: ['iqserver']
 
-#- name: adjust iqserver.properties to restrict to 127.0.0.1
-#  lineinfile: dest=/opt/iqserver/current/etc/iqserver-default.properties regexp="^application-host=" line="application-host=127.0.0.1"
-
-- name: set RUN_AS_USER in iqserver script
-  lineinfile:
-    dest: "{{ iqserver_base_dir }}/current/bin/iqserver.rc"
-    regexp: '^#'
-    line: 'run_as_user="{{ iqserver_user }}"'
-    state: present
-    backrefs: yes
-  tags: ['iqserver']
-
-
-- name: set jvm heap in vmoptions
-  lineinfile:
-    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver.vmoptions"
-    regexp: "^{{ item }}"
-    line: "{{ item }}{{ iqserver_heap_size }}"
-  with_items:
-    - '-Xms'
-    - '-Xmx'
-  tags: ['iqserver']
-
-- name: set maxdirect memory in vmoptions
-  lineinfile:
-    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver.vmoptions"
-    regexp: "^-XX:MaxDirectMemorySize="
-    line: "-XX:MaxDirectMemorySize={{ iqserver_maxdirectmem }}"
-  tags: ['iqserver']
-
-- name: include iqserver startup config in iqserver script
-  lineinfile:
-    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver"
-    line: ". {{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver.rc"
-    insertbefore: "^INSTALL4J_JAVA_PREFIX="
-  tags: ['iqserver']
-
-- name: set iqserver_HOME in iqserver script
-  lineinfile:
-    dest: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver"
-    regexp: "^iqserver_HOME="
-    line: "iqserver_HOME={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
-  tags: ['iqserver']
-
-- name: link iqserver script to sysinit
-  file:
-    src: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver"
-    dest: /etc/init.d/iqserver
-    state: link
-    owner: root
-    group: root
-    mode: 0755
-  when: ansible_distribution_major_version == '6'
-  tags: ['iqserver']
-
 - name: place iqserver systemd service unit
   template:
     src: etc.systemd.system.iqserver.service.j2
@@ -140,7 +85,6 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_distribution_major_version == '7'
   notify: 
     - reload systemd
     - restart iqserver
@@ -159,5 +103,6 @@
     mode: 0640
   with_items:
     - { name: etc.httpd.conf.d.iqserver.conf.j2, filename: /etc/httpd/conf.d/iqserver.conf }
+  when: use_apache
   notify: reload httpd
   tags: ['iqserver']

@@ -1,7 +1,7 @@
 ---
 
 iqserver_user: iqserver
-iqserver_version: 3.21.2-03
+iqserver_version: 1.92.0-02
 
 iqserver_download_base_url: "https://download.sonatype.com/clm/server/"
 
@@ -11,4 +11,7 @@ iqserver_base_url:
 iqserver_context_path: /
 
 iqserver_heap_size: '1200M'
-iqserver_maxdirectmem: '2G'
+
+# Whether or not to use Apache as a reverse proxy
+# must be installed using the ansible-role-apache module.
+use_apache: true

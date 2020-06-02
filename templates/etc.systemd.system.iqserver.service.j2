@@ -5,8 +5,9 @@ After=network.target
 [Service]
 LimitNOFILE=65536
 Type=forking
-ExecStart={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver start
-ExecStop={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver stop
+WorkingDirectory={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}
+ExecStart=java -Xms={{ iqserver_heap_size }} -Xmx={{ iqserver_heap_size }} -jar nexus-iq-server-{{ iqserver_version }}.jar server config.yml
+ExecStop=kill `ps aux | grep nexus-iq-server | grep '.jar server' | grep -vE '(stop|grep)' | awk '{print $2}'`
 User={{ iqserver_user }}
 Restart=on-abort
 
