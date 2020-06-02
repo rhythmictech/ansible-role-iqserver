@@ -1,17 +1,67 @@
 ---
+########################################
+# General Vars
+########################################
 
-iqserver_user: iqserver
-iqserver_version: 1.92.0-02
+iqserver_version: "1.92.0-02"
 
-iqserver_download_base_url: "https://download.sonatype.com/clm/server/"
-
-iqserver_base_dir: '/opt/iqserver'
-
-iqserver_base_url:
-iqserver_context_path: /
-
-iqserver_heap_size: '1200M'
+# The URL that users will access the application through. This should be
+# a fully qualified domain. The app hardcodes URLs so this needs to be 
+# accurate. 
+iqserver_url_hostname: localhost
+iqserver_url_protocol: http
+iqserver_url_context_path: /
 
 # Whether or not to use Apache as a reverse proxy
 # must be installed using the ansible-role-apache module.
-use_apache: true
+# won'
+iqserver_use_apache: true
+
+# Heap size to use 
+iqserver_heap_size: "2048M"
+
+# Log level. Ships with DEBUG
+iqserver_base_log_level: DEBUG
+
+# whether or not to create sample data when a new install is detected
+iqserver_create_sample_data: false
+
+########################################
+# Jira integration
+########################################
+iqserver_enable_jira_integration: false
+
+# Jira fully qualified JIRA URL
+iqserver_jira_url:
+
+# Jira Username 
+iqaserver_jira_username:
+
+# Jira API Token. Consider setting this to a placeholder.
+# See https://confluence.atlassian.com/cloud/api-tokens-938839638.html
+# for info.
+iqserver_jira_api_token:
+
+########################################
+# Remote User Token  integration
+########################################
+
+# RUT will allow you to use an authentication proxy. Only
+# enable this if you're reasonably sure what you're doing.
+iqserver_enable_rut: false
+
+# Header that will have the username.
+iqserver_rut_username_header: "REMOTE_USER"
+
+# URL to route users back to when they log out.
+iqserver_rut_logout_url:
+
+########################################
+# Probably don't need to change these
+########################################
+
+# Base directory that iqserver is installed in. The module will create
+# an untarred dir, a current symlink, and a sonatype-work dir.
+iqserver_base_dir: "/opt/iqserver"
+iqserver_download_base_url: "https://download.sonatype.com/clm/server/"
+iqserver_user: "iqserver"
