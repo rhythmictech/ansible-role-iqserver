@@ -41,6 +41,8 @@
   file:
     path: "{{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}"
     mode: 0750
+    owner: "{{ iqserver_user }}"
+    group: "{{ iqserver_user }}"
     state: directory
   tags: ['iqserver']
 
