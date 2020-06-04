@@ -5,8 +5,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/init.d/nexus-iq-server start
-ExecStop=/etc/init.d/nexus-iq-server stop
+ExecStart=/etc/init.d/iqserver start
+ExecStop=/etc/init.d/iqserver stop
 User={{ iqserver_user }}
 Restart=on-abort
 
