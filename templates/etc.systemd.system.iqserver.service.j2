@@ -7,7 +7,9 @@ After=network.target
 Type=simple
 ExecStart=/etc/init.d/iqserver start
 ExecStop=/etc/init.d/iqserver stop
-User={{ iqserver_user }}
+
+# the initd script will run this as {{ iqserver_user }}
+User=root
 Restart=on-abort
 
 [Install]
