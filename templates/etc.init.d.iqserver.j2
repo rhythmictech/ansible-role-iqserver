@@ -1,4 +1,4 @@
-#!/bin/sh
+#!env /bin/bash
 
 # The following comment lines are used by the init setup script like the
 # chkconfig command for RedHat based distributions. Change as
@@ -16,7 +16,7 @@
 
 NEXUS_IQ_SERVER_HOME={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}
 VERSION={{ iqserver_version }}
-JAVA_OPTIONS="-Xms={{ iqserver_heap_size }} -Xmx={{ iqserver_heap_size }} -XX:MaxPermSize=128m"
+JAVA_OPTIONS="-Xms{{ iqserver_heap_size }} -Xmx{{ iqserver_heap_size }}"
 RUN_AS_USER={{ iqserver_user }}
 
 do_start()
@@ -49,7 +49,7 @@ case $1 in
         do_console
         ;;
     start)
-        do_start
+        do_start    
         ;;
     stop)
         do_stop

@@ -18,7 +18,7 @@ iqserver_url_context_path: /
 iqserver_use_apache: true
 
 # Heap size to use 
-iqserver_heap_size: "2048M"
+iqserver_heap_size: "2048m"
 
 # Log level. Ships with DEBUG
 iqserver_base_log_level: DEBUG
