@@ -1,13 +1,15 @@
+# {{ ansible_managed }}
 [Unit]
-Description=iqserver service
+Description=Nexus IQ Service
 After=network.target
 
 [Service]
-LimitNOFILE=65536
-Type=forking
-ExecStart={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver start
-ExecStop={{ iqserver_base_dir }}/iqserver-{{ iqserver_version }}/bin/iqserver stop
-User={{ iqserver_user }}
+Type=simple
+ExecStart=/etc/init.d/iqserver start
+ExecStop=/etc/init.d/iqserver stop
+
+# the initd script will run this as {{ iqserver_user }}
+User=root
 Restart=on-abort
 
 [Install]

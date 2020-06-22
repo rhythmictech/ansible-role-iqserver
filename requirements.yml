@@ -1,0 +1,9 @@
+---
+
+- src: https://github.com/rhythmictech/ansible-role-apache.git
+  version: v0.0.7
+  name: apache
+
+- src: https://github.com/rhythmictech/ansible-role-java.git
+  version: v1.1.1
+  name: java

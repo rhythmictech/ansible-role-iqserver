@@ -8,9 +8,9 @@ ProxyPreserveHost On
 
   # Use HTTP Strict Transport Security to force client to use secure connections only
   
-  ServerName			{{ iqserver_base_url }}
-  ProxyPass 	   /	http://localhost:8081{{ iqserver_context_path }}
-  ProxyPassReverse /	http://localhost:8081{{ iqserver_context_path }}
+  ServerName			{{ iqserver_url_hostname }}
+  ProxyPass 	   {{ iqserver_url_context_path }}	http://localhost:8070{{ iqserver_url_context_path }}
+  ProxyPassReverse {{ iqserver_url_context_path }}	http://localhost:8070{{ iqserver_url_context_path }}
 
   ErrorLog /var/log/httpd/error_log
   CustomLog /var/log/httpd/access_log json

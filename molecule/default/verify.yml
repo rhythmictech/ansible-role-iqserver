@@ -1,0 +1,15 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  pre_tasks:
+  - name: populate service facts
+    service_facts:
+  - debug:
+      var: ansible_facts.services
+
+  tasks:
+  - name: iqserver is running
+    assert:
+      that: true
