@@ -90,7 +90,7 @@
     owner: "root"
     group: "root"
     mode: "0640"
-  notify: 
+  notify:
     - reload systemd
     - restart iqserver
   tags: ['iqserver']
@@ -102,7 +102,7 @@
     owner: "{{ iqserver_user }}"
     group: "{{ iqserver_user }}"
     mode: "0640"
-  notify: 
+  notify:
     - reload systemd
     - restart iqserver
   tags: ['iqserver']
@@ -123,7 +123,7 @@
     owner: "root"
     group: "root"
     mode: "0644"
-  notify: 
+  notify:
     - reload systemd
     - restart iqserver
   tags: ['iqserver']

@@ -6,8 +6,8 @@
 iqserver_version: "1.92.0-02"
 
 # The URL that users will access the application through. This should be
-# a fully qualified domain. The app hardcodes URLs so this needs to be 
-# accurate. 
+# a fully qualified domain. The app hardcodes URLs so this needs to be
+# accurate.
 iqserver_url_hostname: localhost
 iqserver_url_protocol: http
 iqserver_url_context_path: /
@@ -17,7 +17,7 @@ iqserver_url_context_path: /
 # won'
 iqserver_use_apache: true
 
-# Heap size to use 
+# Heap size to use
 iqserver_heap_size: "2048m"
 
 # Log level. Ships with DEBUG
@@ -34,7 +34,7 @@ iqserver_enable_jira_integration: false
 # Jira fully qualified JIRA URL
 iqserver_jira_url:
 
-# Jira Username 
+# Jira Username
 iqaserver_jira_username:
 
 # Jira API Token. Consider setting this to a placeholder.
