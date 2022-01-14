@@ -62,6 +62,7 @@ iqserver_rut_logout_url:
 
 # Base directory that iqserver is installed in. The module will create
 # an untarred dir, a current symlink, and a sonatype-work dir.
+wait_for_sonatype-work_mount: true
 iqserver_base_dir: "/opt/iqserver"
 iqserver_download_base_url: "https://download.sonatype.com/clm/server/"
 iqserver_user: "iqserver"

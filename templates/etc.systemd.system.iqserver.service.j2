@@ -1,8 +1,12 @@
 # {{ ansible_managed }}
 [Unit]
 Description=Nexus IQ Service
+{% if wait_for_sonatype-work_mount %}
 Requires={{ iqserver_base_dir|replace("/", "-") }}-sonatype\x2dwork.mount
 After=network.target {{ iqserver_base_dir|replace("/", "-") }}-sonatype\x2dwork.mount
+{% else %}
+After=network.target
+{% endif %}
 
 [Service]
 Type=simple
