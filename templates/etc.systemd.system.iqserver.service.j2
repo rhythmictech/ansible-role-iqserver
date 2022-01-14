@@ -1,7 +1,8 @@
 # {{ ansible_managed }}
 [Unit]
 Description=Nexus IQ Service
-After=network.target
+Requires={{ iqserver_base_dir|replace("/", "-") }}-sonatype\x2dwork.mount
+After=network.target {{ iqserver_base_dir|replace("/", "-") }}-sonatype\x2dwork.mount
 
 [Service]
 Type=simple
