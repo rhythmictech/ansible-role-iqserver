@@ -23,6 +23,9 @@ iqserver_heap_size: "2048m"
 # Log level. Ships with DEBUG
 iqserver_base_log_level: DEBUG
 
+# Pre-definfed logging format to use for Apache CustomLogging
+iqserver_apache_log_format: json
+
 # whether or not to create sample data when a new install is detected
 iqserver_create_sample_data: false
 

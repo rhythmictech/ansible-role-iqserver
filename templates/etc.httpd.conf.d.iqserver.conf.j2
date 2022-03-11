@@ -13,5 +13,5 @@ ProxyPreserveHost On
   ProxyPassReverse {{ iqserver_url_context_path }}	http://localhost:8070{{ iqserver_url_context_path }}
 
   ErrorLog /var/log/httpd/error_log
-  CustomLog /var/log/httpd/access_log json
+  CustomLog /var/log/httpd/access_log {{ iqserver_apache_log_format }}
 </VirtualHost>
