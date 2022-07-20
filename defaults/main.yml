@@ -68,4 +68,4 @@ iqserver_rut_logout_url:
 wait_for_sonatypework_mount: false
 iqserver_base_dir: "/opt/iqserver"
 iqserver_download_base_url: "https://download.sonatype.com/clm/server/"
-iqserver_user: "iqserver"
+iqserver_user: "mon-user"

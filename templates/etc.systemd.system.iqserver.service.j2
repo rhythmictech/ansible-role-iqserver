@@ -3,17 +3,18 @@
 Description=Nexus IQ Service
 {% if wait_for_sonatypework_mount %}
 Requires={{ iqserver_base_dir|replace("/", "-") }}-sonatype\x2dwork.mount
-After=network.target {{ iqserver_base_dir|replace("/", "-") }}-sonatype\x2dwork.mount
+After=network-online.target {{ iqserver_base_dir|replace("/", "-") }}-sonatype\x2dwork.mount
 {% else %}
-After=network.target
+After=network-online.target
 {% endif %}
 
 [Service]
-Type=simple
+Type=forking
 ExecStart=/etc/init.d/iqserver start
 ExecStop=/etc/init.d/iqserver stop
 User={{ iqserver_user }}
 Restart=on-abort
+TimeoutSec=600
 
 [Install]
 WantedBy=multi-user.target
