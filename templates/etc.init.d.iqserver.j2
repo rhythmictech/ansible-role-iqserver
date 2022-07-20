@@ -21,27 +21,36 @@ RUN_AS_USER={{ iqserver_user }}
 
 do_start()
 {
-    cd $NEXUS_IQ_SERVER_HOME
-    java $JAVA_OPTIONS -jar nexus-iq-server-$VERSION.jar server config.yml
+    _cmd &
     echo "Started nexus-iq-server"
 }
 
 do_console()
 {
-    cd $NEXUS_IQ_SERVER_HOME
-    java $JAVA_OPTIONS -jar nexus-iq-server-$VERSION.jar server config.yml
+    _cmd
 }
 
 do_stop()
 {
     pid=`ps aux | grep nexus-iq-server | grep '.jar server' | grep -vE '(stop|grep)' | awk '{print $2}'`
     kill $pid
-    echo "Killed nexus-iq-server - PID $pid"
+    echo "Stopping nexus-iq-server - PID $pid ($?)"
 }
 
 do_usage()
 {
     echo "Usage: nexus-iq-server [console|start|stop]"
+}
+
+_cmd()
+{
+    cd $NEXUS_IQ_SERVER_HOME || return $?
+    chown $RUN_AS_USER ./stderr.log
+    if [ "$RUN_AS_USER" == "$USER" ]; then
+        java $JAVA_OPTIONS -jar nexus-iq-server-$VERSION.jar server config.yml
+    else
+        sudo -u $RUN_AS_USER java $JAVA_OPTIONS -jar nexus-iq-server-$VERSION.jar server config.yml
+    fi 2> stderr.log
 }
 
 case $1 in
